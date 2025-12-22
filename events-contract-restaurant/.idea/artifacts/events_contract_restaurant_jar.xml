@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="events-contract-restaurant:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/events_contract_restaurant_jar</output-path>
+    <root id="archive" name="events-contract-restaurant.jar">
+      <element id="module-output" name="events-contract-restaurant" />
+    </root>
+  </artifact>
+</component>

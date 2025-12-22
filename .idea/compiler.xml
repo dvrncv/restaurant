@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="api-contract-restaurant" />
+        <module name="notification-service-restaurant" />
+        <module name="rest-restaurant" />
+        <module name="events-contract-restaurant" />
+        <module name="analytics-service-restaurant" />
+        <module name="audit-service-restaurant" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="analytics-service-restaurant" options="-parameters" />
+      <module name="api-contract-restaurant" options="-parameters" />
+      <module name="audit-service-restaurant" options="-parameters" />
+      <module name="events-contract-restaurant" options="-parameters" />
+      <module name="notification-service-restaurant" options="-parameters" />
+      <module name="rest-restaurant" options="-parameters" />
+    </option>
+  </component>
+</project>

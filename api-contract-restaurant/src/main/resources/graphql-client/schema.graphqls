@@ -1,0 +1,87 @@
+type Ingredient {
+    id: ID!
+    name: String
+    quantity: Int
+    expirationDate: String
+    unit: String
+}
+
+type Dish {
+    id: ID!
+    name: String
+    durationTime: Int
+    ingredients: [Ingredient]
+}
+
+type OrderItem {
+    dishId: ID!
+    name: String
+    quantity: Int
+    startedAt: String
+    finishedAt: String
+}
+
+type Order {
+    id: ID!
+    dishes: [OrderItem]
+    status: String
+    startTime: String
+    endTime: String
+}
+
+type PagedOrders {
+    content: [Order]
+    pageNumber: Int
+    pageSize: Int
+    totalElements: Int
+    totalPages: Int
+    last: Boolean
+}
+
+input IngredientInput {
+    name: String!
+    quantity: Int!
+    expirationDate: String!
+    unit: String!
+}
+
+input DishInput {
+    name: String!
+    durationTime: Int!
+    ingredients: [ID!]!
+}
+
+input OrderItemInput {
+    dishId: ID!
+    quantity: Int!
+}
+
+input OrderInput {
+    dishes: [OrderItemInput!]!
+}
+
+type Query {
+    dishes: [Dish]
+    dishById(id: ID!): Dish
+
+    ingredients: [Ingredient]
+    ingredientById(id: ID!): Ingredient
+
+    orders(orderId: ID, page: Int = 0, size: Int = 10): PagedOrders
+    orderById(id: ID!): Order
+}
+
+type Mutation {
+    createDish(input: DishInput!): Dish
+    updateDish(id: ID!, input: DishInput!): Dish
+    deleteDish(id: ID!): ID
+
+    createIngredient(input: IngredientInput!): Ingredient
+    updateIngredient(id: ID!, input: IngredientInput!): Ingredient
+    deleteIngredient(id: ID!): ID
+
+    createOrder(input: OrderInput!): Order
+    updateOrder(id: ID!, input: OrderInput!): Order
+    updateOrderStatus(id: ID!, status: String!): Order
+    deleteOrder(id: ID!): ID
+}

@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "demo";
+option java_outer_classname = "AnalyticsProto";
+
+service AnalyticsService {
+  rpc AnalyzeOrder (OrderAnalyticsRequest)
+      returns (OrderAnalyticsResponse) {}
+}
+
+message OrderItem {
+  int64 dish_id = 1;
+  int32 quantity = 2;
+}
+
+message OrderAnalyticsRequest {
+  int64 order_id = 1;
+  repeated OrderItem items = 2;
+  int32 cooking_time_minutes = 3;
+}
+
+message OrderAnalyticsResponse {
+  int64 order_id = 1;
+  int32 total_items = 2;
+  int32 complexity_score = 3;
+  string verdict = 4;
+}

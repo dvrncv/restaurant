@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Уведомления заказов</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        #status {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        #notifications-area {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .notification {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-left: 5px solid;
+            border-radius: 4px;
+            background-color: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .verdict-FAST { border-color: #28a745; background-color: #e6f4ea; }
+        .verdict-NORMAL { border-color: #ffc107; background-color: #fff8e1; }
+        .verdict-COMPLEX { border-color: #dc3545; background-color: #fbeaea; }
+    </style>
+</head>
+<body>
+<h2>Уведомления о статистике заказов</h2>
+<div id="status">Отключено</div>
+<div id="notifications-area"></div>
+
+<script>
+    const statusDiv = document.getElementById('status');
+    const area = document.getElementById('notifications-area');
+
+    let socket;
+
+    function connect() {
+        socket = new WebSocket('ws://localhost:8083/ws/notifications');
+
+        socket.onopen = () => {
+            statusDiv.innerText = "Подключено";
+            statusDiv.style.color = "#28a745";
+        };
+
+        socket.onmessage = event => {
+            const data = JSON.parse(event.data);
+            console.log("Получено событие:", data);
+
+            if (data.type === "ORDER_ANALYZED") {
+                const div = document.createElement('div');
+                div.className = `notification verdict-${data.verdict}`;
+                div.innerHTML = `
+                    <strong>Заказ ${data.orderId}</strong><br>
+                    Кол-во блюд в заказе: ${data.totalItems}<br>
+                    Время приготовления: ${data.complexityScore}<br>
+                    Сложность: <b>${data.verdict}</b>
+                `;
+                area.prepend(div);
+            }
+        };
+
+        socket.onclose = () => {
+            statusDiv.innerText = "Отключено. Переподключение...";
+            statusDiv.style.color = "#dc3545";
+            setTimeout(connect, 3000);
+        };
+    }
+
+    connect();
+</script>
+</body>
+</html>
