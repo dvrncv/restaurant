@@ -1,35 +1,7 @@
 # Restaurant SOP - Инструкция для зачета
 
-## Описание проекта
-
-Микросервисная архитектура ресторана с использованием:
-- Spring Boot 3.3.5
-- gRPC для межсервисного взаимодействия
-- RabbitMQ для асинхронной коммуникации
-- Prometheus + Grafana для мониторинга
-- Zipkin для трассировки
-- Jenkins для CI/CD
-
-## Структура проекта
-
-```
-restaurant-sop/
-├── api-contract-restaurant/          # API контракты
-├── events-contract-restaurant/        # События контракты
-├── analytics-service-restaurant/      # gRPC сервис аналитики
-├── audit-service-restaurant/         # Сервис аудита
-├── notification-service-restaurant/  # Сервис уведомлений
-├── rest-restaurant/                  # REST API сервис
-├── docker-compose.yml                # Основной docker-compose
-├── prometheus.yml                    # Конфигурация Prometheus
-├── Jenkinsfile                       # Jenkins pipeline
-└── jenkins/                          # Jenkins конфигурация
-```
-
 ## Порты сервисов
 
-| Порт | Сервис | Описание |
-|------|--------|----------|
 | 8080 | Demo REST API | Основной REST API |
 | 8081 | Analytics Service | HTTP/Actuator метрики |
 | 8082 | Audit Service | Сервис аудита |
@@ -42,7 +14,6 @@ restaurant-sop/
 | 5672 | RabbitMQ | Брокер сообщений |
 | 15672 | RabbitMQ Management | UI управления |
 
----
 
 ## Шаг 1: Подготовка проекта
 
@@ -50,7 +21,7 @@ restaurant-sop/
 
 ```bash
 git clone <URL_РЕПОЗИТОРИЯ>
-cd restaurant-sop
+cd restaurant
 ```
 
 ### Вариант B: С флешки
@@ -58,7 +29,7 @@ cd restaurant-sop
 ```bash
 # Скопируйте папку проекта на компьютер
 # Откройте терминал в папке проекта
-cd restaurant-sop
+cd restaurant
 ```
 
 ---

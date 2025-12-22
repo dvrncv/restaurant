@@ -110,11 +110,13 @@
         <dependency>
             <groupId>com.netflix.graphql.dgs</groupId>
             <artifactId>graphql-dgs-spring-boot-starter</artifactId>
+            <version>8.5.6</version>
         </dependency>
 
         <dependency>
             <groupId>com.netflix.graphql.dgs</groupId>
             <artifactId>graphql-dgs-subscriptions-websockets-autoconfigure</artifactId>
+            <version>8.5.6</version>
         </dependency>
 
         <dependency>
