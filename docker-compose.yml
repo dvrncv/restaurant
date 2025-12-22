@@ -1,7 +1,6 @@
 version: "3.8"
 
 services:
-  # Инфраструктура: Брокер сообщений
   rabbitmq:
     image: rabbitmq:3.13-management
     ports:
@@ -15,7 +14,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # Инфраструктура: Трассировка
   zipkin:
     image: openzipkin/zipkin
     ports:
@@ -23,7 +21,6 @@ services:
     networks:
       - microservices-net
 
-  # Инфраструктура: Метрики
   prometheus:
     image: prom/prometheus
     volumes:
@@ -33,7 +30,6 @@ services:
     networks:
       - microservices-net
 
-  # Инфраструктура: Визуализация метрик
   grafana:
     image: grafana/grafana:latest
     ports:
@@ -47,12 +43,11 @@ services:
     depends_on:
       - prometheus
 
-  # Микросервисы
   analytics-service:
     build: ./analytics-service-restaurant
     ports:
-      - "9090:9090" # gRPC порт
-      - "8081:8081" # HTTP порт для метрик
+      - "9090:9090"
+      - "8081:8081"
     environment:
       - SPRING_RABBITMQ_HOST=rabbitmq
       - SERVER_PORT=8081
@@ -91,10 +86,10 @@ services:
   demo-rest:
     build: ./rest-restaurant
     ports:
-      - "8080:8080"
+      - "8090:8090"
     environment:
       - SPRING_RABBITMQ_HOST=rabbitmq
-      # Указываем адрес gRPC сервиса внутри сети Docker
+      - SERVER_PORT=8090
       - GRPC_CLIENT_ANALYTICS_SERVICE_ADDRESS=static://analytics-service:9090
     depends_on:
       rabbitmq:

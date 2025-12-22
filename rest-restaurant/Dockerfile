@@ -11,7 +11,7 @@ COPY ${JAR_FILE} app.jar
 RUN chown javauser:javauser /app/app.jar
 
 USER javauser
-EXPOSE 8080
+EXPOSE 8090
 
 # Простой запуск без JAVA_OPTS (Spring Boot сам оптимизирует)
 ENTRYPOINT ["java", "-jar", "app.jar"]
