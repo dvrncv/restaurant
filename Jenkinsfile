@@ -19,23 +19,6 @@ pipeline {
             }
         }
         
-        stage('Build Parent POM') {
-            steps {
-                script {
-                    try {
-                        if (isUnix()) {
-                            sh 'mvn clean install -N -DskipTests'
-                        } else {
-                            bat 'mvnw.cmd clean install -N -DskipTests'
-                        }
-                    } catch (Exception e) {
-                        echo "Failed to build parent POM: ${e.getMessage()}"
-                        throw e
-                    }
-                }
-            }
-        }
-        
         stage('Build Contracts') {
             parallel failFast: false, {
                 stage('Build events-contract-restaurant') {
