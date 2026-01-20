@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,13 +46,23 @@ public class OrderAnalyticsController {
                     .body("Order not found");
         }
 
+        String status = order.getStatus();
+        if (!"READY".equalsIgnoreCase(status) && !"COMPLETED".equalsIgnoreCase(status)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Заказ ещё в процессе приготовления (статус: " + status + "). " +
+                            "Аналитика доступна только для заказов со статусом READY или COMPLETED.");
+        }
+
         try {
-            int cookingTime = order.getDishes().stream()
-                    .mapToInt(d -> (int) java.time.Duration.between(
-                            d.getStartedAt(),
-                            d.getFinishedAt()
-                    ).toMinutes())
-                    .sum();
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime startTime = order.getStartTime();
+            LocalDateTime completionTime = order.getEndTime();
+
+            if ("READY".equalsIgnoreCase(status)) {
+                completionTime = now;
+            }
+
+            int actualCookingTime = (int) Duration.between(startTime, completionTime).toMinutes();
 
             List<String> ingredientsUsed = new ArrayList<>();
             order.getDishes().forEach(dishItem -> {
@@ -65,9 +77,9 @@ public class OrderAnalyticsController {
 
             OrderAnalyticsRequest.Builder requestBuilder = OrderAnalyticsRequest.newBuilder()
                     .setOrderId(order.getId())
-                    .setCookingTimeMinutes(cookingTime)
-                    .setOrderCreated(order.getStartTime().toString())
-                    .setOrderCompleted(order.getEndTime().toString())
+                    .setCookingTimeMinutes(actualCookingTime)
+                    .setOrderCreated(startTime.toString())
+                    .setOrderCompleted(completionTime.toString())
                     .addAllTotalIngredientsUsed(ingredientsUsed);
 
             for (OrderItemResponse item : order.getDishes()) {
