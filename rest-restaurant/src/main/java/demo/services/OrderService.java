@@ -81,25 +81,19 @@ public class OrderService {
                             dish.getId(),
                             dish.getName(),
                             dishItem.quantity(),
-                            now,
-                            now.plusMinutes(dish.getDurationTime())
+                            now
                     );
                 })
                 .toList();
 
         long id = storage.orderSequence.incrementAndGet();
         LocalDateTime startTime = LocalDateTime.now();
-        LocalDateTime endTime = items.stream()
-                .map(OrderItemResponse::getFinishedAt)
-                .max(LocalDateTime::compareTo)
-                .orElse(startTime);
 
         OrderResponse order = new OrderResponse(
                 id,
                 items,
                 "CREATE",
-                startTime,
-                endTime
+                startTime
         );
 
         storage.orders.put(id, order);
@@ -140,24 +134,18 @@ public class OrderService {
                             dish.getId(),
                             dish.getName(),
                             dishItem.quantity(),
-                            now,
-                            now.plusMinutes(dish.getDurationTime())
+                            now
                     );
                 })
                 .toList();
 
         LocalDateTime startTime = existingOrder.getStartTime();
-        LocalDateTime endTime = items.stream()
-                .map(OrderItemResponse::getFinishedAt)
-                .max(LocalDateTime::compareTo)
-                .orElse(startTime);
 
         OrderResponse updated = new OrderResponse(
                 id,
                 items,
                 existingOrder.getStatus(),
-                startTime,
-                endTime
+                startTime
         );
 
         storage.orders.put(id, updated);
@@ -176,7 +164,7 @@ public class OrderService {
                 existingOrder.getDishes(),
                 newStatus,
                 existingOrder.getStartTime(),
-                existingOrder.getEndTime()
+                LocalDateTime.now()
         );
 
         storage.orders.put(id, updatedOrder);

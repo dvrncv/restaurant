@@ -1,5 +1,8 @@
 package demo.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
@@ -7,13 +10,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Relation(collectionRelation = "orders", itemRelation = "order")
 public class OrderResponse extends RepresentationModel<OrderResponse> {
-    private final Long id;
-    private final List<OrderItemResponse> dishes;
-    private final String status;
-    private final LocalDateTime startTime;
-    private final LocalDateTime endTime;
+    private  Long id;
+    private  List<OrderItemResponse> dishes;
+    private  String status;
+    private  LocalDateTime startTime;
+    private  LocalDateTime endTime;
 
     public OrderResponse(Long id, List<OrderItemResponse> dishes, String status,
                          LocalDateTime startTime, LocalDateTime endTime) {
@@ -22,6 +26,14 @@ public class OrderResponse extends RepresentationModel<OrderResponse> {
         this.status = status;
         this.startTime = startTime;
         this.endTime = endTime;
+    }
+
+    public OrderResponse(Long id, List<OrderItemResponse> dishes, String status,
+                         LocalDateTime startTime) {
+        this.id = id;
+        this.dishes = dishes;
+        this.status = status;
+        this.startTime = startTime;
     }
 
     public Long getId() {
@@ -36,10 +48,12 @@ public class OrderResponse extends RepresentationModel<OrderResponse> {
         return status;
     }
 
+    @JsonFormat(pattern = "dd.MM.yyyy HH:mm")
     public LocalDateTime getStartTime() {
         return startTime;
     }
 
+    @JsonFormat(pattern = "dd.MM.yyyy HH:mm")
     public LocalDateTime getEndTime() {
         return endTime;
     }

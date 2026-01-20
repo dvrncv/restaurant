@@ -28,7 +28,7 @@ public class InMemoryStorage {
 
         IngredientResponse ing1 = new IngredientResponse(ingredientSequence.incrementAndGet(),
                 "Морковь",
-                10000,
+                100,
                 LocalDate.now().plusDays(10),
                 "гр"
         );
@@ -69,16 +69,14 @@ public class InMemoryStorage {
                 dish1.getId(),
                 dish1.getName(),
                 2,
-                LocalDateTime.now(),
-                LocalDateTime.now().plusMinutes(dish1.getDurationTime())
+                LocalDateTime.now()
         );
 
         OrderResponse order1 = new OrderResponse(
                 orderSequence.incrementAndGet(),
                 List.of(orderItem1),
-                "READY",
-                LocalDateTime.now(),
-                LocalDateTime.now().plusMinutes(dish1.getDurationTime())
+                "CREATED",
+                LocalDateTime.now()
         );
 
         orders.put(order1.getId(), order1);

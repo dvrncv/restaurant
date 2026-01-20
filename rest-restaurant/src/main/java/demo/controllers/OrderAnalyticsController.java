@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,8 +97,10 @@ public class OrderAnalyticsController {
 
             OrderAnalyzedEvent event = new OrderAnalyzedEvent(
                     response.getOrderId(),
-                    response.getOrderStartTime(),
-                    response.getOrderReadyTime(),
+                    LocalDateTime.parse(response.getOrderStartTime())
+                                    .format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")),
+                    LocalDateTime.parse(response.getOrderReadyTime())
+                            .format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")),
                     response.getDishCount(),
                     response.getTotalItems(),
                     response.getComplexityScore(),
