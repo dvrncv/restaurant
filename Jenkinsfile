@@ -1,15 +1,13 @@
 pipeline {
     agent any
     
-    tools {
-        maven 'Maven'
-        jdk 'JDK 17'
+    environment {
+        COMPOSE_PROJECT_NAME = "restaurant"
+        CONTAINERS = "rabbitmq zipkin prometheus grafana analytics-service audit-service notification-service demo-rest"
     }
     
-    environment {
-        JAVA_HOME = tool 'JDK 17'
-        MAVEN_HOME = tool 'Maven'
-        PATH = "${MAVEN_HOME}/bin:${JAVA_HOME}/bin:${PATH}"
+    triggers {
+        pollSCM('H/2 * * * *')
     }
     
     stages {
@@ -19,189 +17,53 @@ pipeline {
             }
         }
         
-        stage('Build Contracts') {
-            parallel failFast: false, {
-                stage('Build events-contract-restaurant') {
-                    steps {
-                        dir('events-contract-restaurant') {
-                            script {
-                                try {
-                                    if (isUnix()) {
-                                        sh 'mvn clean install -DskipTests'
-                                    } else {
-                                        bat 'mvnw.cmd clean install -DskipTests'
-                                    }
-                                } catch (Exception e) {
-                                    echo "Failed to build events-contract-restaurant: ${e.getMessage()}"
-                                    throw e
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Build api-contract-restaurant') {
-                    steps {
-                        dir('api-contract-restaurant') {
-                            script {
-                                try {
-                                    if (isUnix()) {
-                                        sh 'mvn clean install -DskipTests'
-                                    } else {
-                                        bat 'mvnw.cmd clean install -DskipTests'
-                                    }
-                                } catch (Exception e) {
-                                    echo "Failed to build api-contract-restaurant: ${e.getMessage()}"
-                                    throw e
-                                }
-                            }
-                        }
-                    }
+        stage('Build Maven Projects') {
+            steps {
+                script {
+                    // Сначала собираем контракты (install в локальный Maven репозиторий)
+                    sh '''
+                        cd events-contract-restaurant && ./mvnw clean install -DskipTests
+                        cd ../api-contract-restaurant && ./mvnw clean install -DskipTests
+                    '''
+                    // Затем собираем все сервисы (package создает JAR файлы)
+                    sh '''
+                        cd analytics-service-restaurant && ./mvnw clean package -DskipTests
+                        cd ../audit-service-restaurant && ./mvnw clean package -DskipTests
+                        cd ../notification-service-restaurant && ./mvnw clean package -DskipTests
+                        cd ../rest-restaurant && ./mvnw clean package -DskipTests
+                    '''
                 }
             }
         }
         
-        stage('Build Services') {
-            parallel failFast: false, {
-                stage('Build analytics-service-restaurant') {
-                    steps {
-                        dir('analytics-service-restaurant') {
-                            script {
-                                if (isUnix()) {
-                                    sh 'mvn clean package -DskipTests'
-                                } else {
-                                    bat 'mvnw.cmd clean package -DskipTests'
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Build audit-service-restaurant') {
-                    steps {
-                        dir('audit-service-restaurant') {
-                            script {
-                                if (isUnix()) {
-                                    sh 'mvn clean package -DskipTests'
-                                } else {
-                                    bat 'mvnw.cmd clean package -DskipTests'
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Build notification-service-restaurant') {
-                    steps {
-                        dir('notification-service-restaurant') {
-                            script {
-                                if (isUnix()) {
-                                    sh 'mvn clean package -DskipTests'
-                                } else {
-                                    bat 'mvnw.cmd clean package -DskipTests'
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Build rest-restaurant') {
-                    steps {
-                        dir('rest-restaurant') {
-                            script {
-                                if (isUnix()) {
-                                    sh 'mvn clean package -DskipTests'
-                                } else {
-                                    bat 'mvnw.cmd clean package -DskipTests'
-                                }
-                            }
-                        }
-                    }
-                }
+        stage('Cleanup') {
+            steps {
+                sh '''
+                    docker compose down -v --remove-orphans ${CONTAINERS} || true
+                    docker rm -f ${CONTAINERS} || true
+                '''
             }
         }
         
-        stage('Build Docker Images') {
-            parallel failFast: false, {
-                stage('Build analytics-service image') {
-                    steps {
-                        dir('analytics-service-restaurant') {
-                            script {
-                                try {
-                                    if (isUnix()) {
-                                        sh 'docker build -t analytics-service-restaurant:latest .'
-                                    } else {
-                                        bat 'docker build -t analytics-service-restaurant:latest .'
-                                    }
-                                } catch (Exception e) {
-                                    echo "Failed to build analytics-service image: ${e.getMessage()}"
-                                    throw e
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Build audit-service image') {
-                    steps {
-                        dir('audit-service-restaurant') {
-                            script {
-                                try {
-                                    if (isUnix()) {
-                                        sh 'docker build -t audit-service-restaurant:latest .'
-                                    } else {
-                                        bat 'docker build -t audit-service-restaurant:latest .'
-                                    }
-                                } catch (Exception e) {
-                                    echo "Failed to build audit-service image: ${e.getMessage()}"
-                                    throw e
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Build notification-service image') {
-                    steps {
-                        dir('notification-service-restaurant') {
-                            script {
-                                try {
-                                    if (isUnix()) {
-                                        sh 'docker build -t notification-service-restaurant:latest .'
-                                    } else {
-                                        bat 'docker build -t notification-service-restaurant:latest .'
-                                    }
-                                } catch (Exception e) {
-                                    echo "Failed to build notification-service image: ${e.getMessage()}"
-                                    throw e
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Build rest-restaurant image') {
-                    steps {
-                        dir('rest-restaurant') {
-                            script {
-                                try {
-                                    if (isUnix()) {
-                                        sh 'docker build -t rest-restaurant:latest .'
-                                    } else {
-                                        bat 'docker build -t rest-restaurant:latest .'
-                                    }
-                                } catch (Exception e) {
-                                    echo "Failed to build rest-restaurant image: ${e.getMessage()}"
-                                    throw e
-                                }
-                            }
-                        }
-                    }
-                }
+        stage('Compose Build & Up') {
+            steps {
+                sh '''
+                    set -e
+                    docker compose up -d --build ${CONTAINERS}
+                '''
             }
         }
     }
     
     post {
+        always {
+            sh 'docker compose ps || true'
+        }
         success {
-            echo 'Build completed successfully!'
-            archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true, allowEmptyArchive: true
+            echo 'Deployment completed successfully!'
         }
         failure {
-            echo 'Build failed!'
+            echo 'Deployment failed!'
         }
     }
 }
