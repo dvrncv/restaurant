@@ -26,15 +26,32 @@ public class NotificationListener {
                     exchange = @Exchange(name = "analytics-fanout", type = "fanout")
             )
     )
+
     public void handleOrderAnalyzed(OrderAnalyzedEvent event) {
-        log.info("Received event from RabbitMQ: {}", event);
+        log.info("Received order analytics event from RabbitMQ for order ID: {}", event.orderId());
+
+        String recommendations = event.recommendations().stream()
+                .map(r -> "\"" + r.replace("\"", "\\\"") + "\"")
+                .collect(java.util.stream.Collectors.joining(",", "[", "]"));
 
         String message = String.format(
-                "{\"type\":\"ORDER_ANALYZED\",\"orderId\":%d,\"totalItems\":%d,\"complexityScore\":%d,\"verdict\":\"%s\"}",
+                "{\"type\":\"ORDER_ANALYZED\"," +
+                        "\"orderId\":%d," +
+                        "\"orderStartTime\":\"%s\"," +
+                        "\"orderReadyTime\":\"%s\"," +
+                        "\"dishCount\":%d," +
+                        "\"totalItems\":%d," +
+                        "\"complexityScore\":%d," +
+                        "\"averageTimePerDish\":%d," +
+                        "\"recommendations\":%s}",
                 event.orderId(),
+                event.orderStartTime(),
+                event.orderReadyTime(),
+                event.dishCount(),
                 event.totalItems(),
                 event.complexityScore(),
-                event.verdict()
+                event.averageTimePerDish(),
+                recommendations
         );
 
         handler.broadcast(message);

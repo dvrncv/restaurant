@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/orders")
 public class OrderAnalyticsController {
@@ -42,22 +45,37 @@ public class OrderAnalyticsController {
         }
 
         try {
+            int cookingTime = order.getDishes().stream()
+                    .mapToInt(d -> (int) java.time.Duration.between(
+                            d.getStartedAt(),
+                            d.getFinishedAt()
+                    ).toMinutes())
+                    .sum();
+
+            List<String> ingredientsUsed = new ArrayList<>();
+            order.getDishes().forEach(dishItem -> {
+                var dish = storage.dishes.get(dishItem.getDishId());
+                if (dish != null && dish.getIngredients() != null) {
+                    dish.getIngredients().forEach(ing -> {
+                        int totalUsed = dishItem.getQuantity() * ing.getQuantity();
+                        ingredientsUsed.add(ing.getName() + ": " + totalUsed + " " + ing.getUnit());
+                    });
+                }
+            });
+
             OrderAnalyticsRequest.Builder requestBuilder = OrderAnalyticsRequest.newBuilder()
                     .setOrderId(order.getId())
-                    .setCookingTimeMinutes(
-                            order.getDishes().stream()
-                                    .mapToInt(d -> (int) java.time.Duration.between(
-                                            d.getStartedAt(),
-                                            d.getFinishedAt()
-                                    ).toMinutes())
-                                    .sum()
-                    );
+                    .setCookingTimeMinutes(cookingTime)
+                    .setOrderCreated(order.getStartTime().toString())
+                    .setOrderCompleted(order.getEndTime().toString())
+                    .addAllTotalIngredientsUsed(ingredientsUsed);
 
             for (OrderItemResponse item : order.getDishes()) {
                 requestBuilder.addItems(
                         OrderItem.newBuilder()
                                 .setDishId(item.getDishId())
                                 .setQuantity(item.getQuantity())
+                                .setDishName(item.getName())
                                 .build()
                 );
             }
@@ -66,9 +84,13 @@ public class OrderAnalyticsController {
 
             OrderAnalyzedEvent event = new OrderAnalyzedEvent(
                     response.getOrderId(),
+                    response.getOrderStartTime(),
+                    response.getOrderReadyTime(),
+                    response.getDishCount(),
                     response.getTotalItems(),
                     response.getComplexityScore(),
-                    response.getVerdict()
+                    response.getAverageTimePerDish(),
+                    response.getRecommendationsList()
             );
 
             rabbitTemplate.convertAndSend(
@@ -82,7 +104,7 @@ public class OrderAnalyticsController {
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.SERVICE_UNAVAILABLE)
-                    .body("Analytics service unavailable");
+                    .body("Analytics service unavailable: " + e.getMessage());
         }
     }
 }

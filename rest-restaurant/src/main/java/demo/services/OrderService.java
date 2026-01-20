@@ -3,8 +3,8 @@ package demo.services;
 import demo.config.RabbitMQConfig;
 import demo.dto.*;
 import demo.events.OrderCreatedEvent;
-import demo.events.OrderDeletedEvent;
 import demo.events.OrderItem;
+import demo.events.OrderReadyEvent;
 import demo.exception.ResourceNotFoundException;
 import demo.storage.InMemoryStorage;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -171,7 +171,7 @@ public class OrderService {
             throw new IllegalStateException("Нельзя изменить статус завершённого заказа");
         }
 
-        OrderResponse updated = new OrderResponse(
+        OrderResponse updatedOrder = new OrderResponse(
                 id,
                 existingOrder.getDishes(),
                 newStatus,
@@ -179,14 +179,37 @@ public class OrderService {
                 existingOrder.getEndTime()
         );
 
-        storage.orders.put(id, updated);
-        return updated;
+        storage.orders.put(id, updatedOrder);
+
+        if ("READY".equalsIgnoreCase(newStatus) || "COMPLETED".equalsIgnoreCase(newStatus)) {
+
+            List<OrderItem> orderItems = updatedOrder.getDishes().stream()
+                    .map(item -> new OrderItem(
+                            item.getDishId(),
+                            item.getName(),
+                            item.getQuantity()
+                    ))
+                    .toList();
+
+            OrderReadyEvent event = new OrderReadyEvent(
+                    updatedOrder.getId(),
+                    orderItems,
+                    LocalDateTime.now(),
+                    newStatus
+            );
+
+            rabbitTemplate.convertAndSend(
+                    RabbitMQConfig.EXCHANGE_NAME,
+                    RabbitMQConfig.ROUTING_KEY_ORDER_READY,
+                    event
+            );
+        }
+
+        return updatedOrder;
     }
 
     public void deleteOrder(Long id) {
         findOrderById(id);
         storage.orders.remove(id);
-        OrderDeletedEvent event = new OrderDeletedEvent(id);
-        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.ROUTING_KEY_ORDER_DELETED, event);
     }
 }

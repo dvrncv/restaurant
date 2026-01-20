@@ -23,8 +23,17 @@ public class InternalOrderAnalyticsListener {
             )
     )
     public void log(OrderAnalyzedEvent event) {
-        System.out.println(
-                "Order " + event.orderId() + " analyzed"
-        );
+        System.out.println("\nАНАЛИТИКА ЗАКАЗА");
+        System.out.println("Номер заказа: " + event.orderId());
+        System.out.println("Создан: " + event.orderStartTime());
+        System.out.println("Готов: " + event.orderReadyTime());
+        System.out.println("Количество блюд: " + event.dishCount());
+        System.out.println("Общее количество позиций: " + event.totalItems());
+        System.out.println("Оценка сложности: " + event.complexityScore());
+        System.out.println("Среднее время на блюдо: " + event.averageTimePerDish() + " мин");
+
+        if (!event.recommendations().isEmpty()) {
+            System.out.println("Рекомендации: " + String.join("; ", event.recommendations()));
+        }
     }
 }

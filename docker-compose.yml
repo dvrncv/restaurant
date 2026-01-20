@@ -99,28 +99,8 @@ services:
     networks:
       - microservices-net
 
-  jenkins:
-    build:
-      context: ./jenkins
-      dockerfile: Dockerfile
-    container_name: jenkins
-    user: root
-    ports:
-      - "8085:8080"
-      - "50000:50000"
-    volumes:
-      - jenkins_home:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
-      - .:/workspace:ro
-    environment:
-      - JAVA_OPTS=-Djenkins.install.runSetupWizard=true
-    networks:
-      - microservices-net
-    restart: unless-stopped
-
 volumes:
   grafana_data:
-  jenkins_home:
 
 networks:
   microservices-net:

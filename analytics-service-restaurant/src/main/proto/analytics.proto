@@ -12,17 +12,31 @@ service AnalyticsService {
 message OrderItem {
   int64 dish_id = 1;
   int32 quantity = 2;
+  string dish_name = 3;
+}
+
+message DishSummary {
+  int64 dish_id = 1;
+  string dish_name = 2;
+  int32 quantity = 3;
 }
 
 message OrderAnalyticsRequest {
   int64 order_id = 1;
   repeated OrderItem items = 2;
   int32 cooking_time_minutes = 3;
+  string order_created = 4;
+  string order_completed = 5;
+  repeated string total_ingredients_used = 6;
 }
 
 message OrderAnalyticsResponse {
   int64 order_id = 1;
-  int32 total_items = 2;
-  int32 complexity_score = 3;
-  string verdict = 4;
+  string order_start_time = 2;
+  string order_ready_time = 3;
+  int32 dish_count = 4;
+  int32 total_items = 5;
+  int32 complexity_score = 6;
+  int32 average_time_per_dish = 7;
+  repeated string recommendations = 8;
 }

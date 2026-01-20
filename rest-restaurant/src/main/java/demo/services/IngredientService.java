@@ -1,23 +1,30 @@
 package demo.services;
 
-
+import demo.config.RabbitMQConfig;
 import demo.dto.DishResponse;
 import demo.dto.IngredientRequest;
 import demo.dto.IngredientResponse;
+import demo.events.IngredientStockEvent;
 import demo.exception.IngredientAlreadyExistsException;
 import demo.exception.ResourceNotFoundException;
 import demo.storage.InMemoryStorage;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class IngredientService {
 
-    private final InMemoryStorage storage;
+    private static final int CRITICAL_STOCK_THRESHOLD = 10;
 
-    public IngredientService(InMemoryStorage storage) {
+    private final InMemoryStorage storage;
+    private final RabbitTemplate rabbitTemplate;
+
+    public IngredientService(InMemoryStorage storage, RabbitTemplate rabbitTemplate) {
         this.storage = storage;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     public List<IngredientResponse> findAllIngredients() {
@@ -31,26 +38,66 @@ public class IngredientService {
 
     public void consumeIngredients(DishResponse dish, int quantity) {
         for (IngredientResponse ingredientInDish : dish.getIngredients()) {
-            Long ingredientId = ingredientInDish.getId();
-            IngredientResponse stored = storage.ingredients.get(ingredientId);
-
-            if (stored == null) {
-                throw new IllegalStateException("Ингредиент не найден на складе: " + ingredientInDish.getName());
+            IngredientResponse storedIngredient = findStoredIngredient(ingredientInDish);
+            
+            int requiredAmount = ingredientInDish.getQuantity() * quantity;
+            validateSufficientStock(storedIngredient, requiredAmount);
+            
+            int remainingStock = reduceIngredientStock(storedIngredient, requiredAmount);
+            
+            if (remainingStock <= CRITICAL_STOCK_THRESHOLD) {
+                notifyCriticalStock(storedIngredient, remainingStock);
             }
-
-            int totalRequired = ingredientInDish.getQuantity() * quantity;
-            if (stored.getQuantity() < totalRequired) {
-                throw new IllegalStateException("Недостаточно ингредиентов: " + ingredientInDish.getName());
-            }
-
-            storage.ingredients.put(ingredientId, new IngredientResponse(
-                    stored.getId(),
-                    stored.getName(),
-                    stored.getQuantity() - totalRequired,
-                    stored.getExpirationDate(),
-                    stored.getUnit()
-            ));
         }
+    }
+
+    private IngredientResponse findStoredIngredient(IngredientResponse ingredient) {
+        IngredientResponse stored = storage.ingredients.get(ingredient.getId());
+        if (stored == null) {
+            throw new IllegalStateException(
+                    "Ингредиент не найден на складе: " + ingredient.getName()
+            );
+        }
+        return stored;
+    }
+
+    private void validateSufficientStock(IngredientResponse ingredient, int required) {
+        if (ingredient.getQuantity() < required) {
+            throw new IllegalStateException(
+                    "Недостаточно ингредиентов: " + ingredient.getName() + 
+                    " (требуется: " + required + ", доступно: " + ingredient.getQuantity() + ")"
+            );
+        }
+    }
+
+    private int reduceIngredientStock(IngredientResponse ingredient, int amount) {
+        int newQuantity = ingredient.getQuantity() - amount;
+        
+        IngredientResponse updated = new IngredientResponse(
+                ingredient.getId(),
+                ingredient.getName(),
+                newQuantity,
+                ingredient.getExpirationDate(),
+                ingredient.getUnit()
+        );
+        
+        storage.ingredients.put(ingredient.getId(), updated);
+        return newQuantity;
+    }
+
+    private void notifyCriticalStock(IngredientResponse ingredient, int currentStock) {
+        IngredientStockEvent event = new IngredientStockEvent(
+                ingredient.getId(),
+                ingredient.getName(),
+                currentStock,
+                CRITICAL_STOCK_THRESHOLD
+        );
+        
+        rabbitTemplate.convertAndSend(
+                RabbitMQConfig.EXCHANGE_NAME,
+                RabbitMQConfig.ROUTING_KEY_INGREDIENT_CRITICAL,
+                event
+        );
     }
 
     public IngredientResponse createIngredient(IngredientRequest request) {

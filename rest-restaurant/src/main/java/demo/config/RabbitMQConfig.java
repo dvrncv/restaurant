@@ -13,7 +13,8 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConfig {
     public static final String EXCHANGE_NAME = "order-exchange";
     public static final String ROUTING_KEY_ORDER_CREATED = "order.created";
-    public static final String ROUTING_KEY_ORDER_DELETED = "order.deleted";
+    public static final String ROUTING_KEY_ORDER_READY = "order.ready";
+    public static final String ROUTING_KEY_INGREDIENT_CRITICAL = "ingredient.critical";
     public static final String FANOUT_EXCHANGE = "analytics-fanout";
 
     @Bean
@@ -23,7 +24,7 @@ public class RabbitMQConfig {
 
     @Bean
     public TopicExchange orderExchange() {
-        return new TopicExchange(EXCHANGE_NAME);
+        return new TopicExchange(EXCHANGE_NAME, true, false);
     }
 
     @Bean

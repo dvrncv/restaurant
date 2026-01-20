@@ -1,6 +1,6 @@
 # Restaurant Microservices Project
 
-Проект микросервисной архитектуры ресторана с использованием Spring Boot, gRPC, RabbitMQ, Prometheus, Grafana и Jenkins.
+Проект микросервисной архитектуры ресторана с использованием Spring Boot, gRPC, RabbitMQ, Prometheus и Grafana.
 
 ## Схема портов
 
@@ -18,7 +18,6 @@
 | Zipkin | 9411 | Сервис распределенной трассировки |
 | Prometheus | 9091 | Метрики и мониторинг |
 | Grafana | 3000 | Визуализация метрик |
-| Jenkins | 8085 | CI/CD сервер |
 
 ## Инструкция по запуску проекта
 
@@ -44,62 +43,9 @@ git clone https://github.com/dvrncv/restaurant.git
 docker-compose up -d
 ```
 
-### 4. Запуск Jenkins
+### 4. Показ метрик
 
-После успешной сборки поднимаем Jenkins:
-```bash
-cd jenkins
-docker-compose up -d
-```
-
-### 5. Первый вход в Jenkins
-
-Открываем браузер и переходим по адресу:
-```
-http://localhost:8085
-```
-
-### 6. Получение пароля администратора Jenkins
-
-Получаем начальный пароль:
-```bash
-docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
-```
-
-### 7. Настройка инструментов в Jenkins
-
-1. Заходим в Jenkins
-2. Переходим в **Manage Jenkins** → **Tools**
-3. Устанавливаем **JDK 17** (выбираем автоматическую установку)
-4. Устанавливаем **Maven** (выбираем версию 3.9.5 или выше)
-
-### 8. Создание Pipeline Job
-
-1. Нажимаем **New Item**
-2. Выбираем **Pipeline**
-3. Указываем имя проекта (например, `restaurant-pipeline`)
-4. Прокручиваем вниз до раздела **Pipeline**
-5. Выбираем **Pipeline script from SCM**
-6. В **SCM** выбираем **Git**
-7. В **Repository URL** указываем: `https://github.com/dvrncv/restaurant.git`
-8. В **Branch Specifier** указываем: `*/main`
-9. В **Script Path** указываем: `Jenkinsfile`
-10. Нажимаем **Save**
-
-### 9. Запуск сборки
-
-Нажимаем **Build Now** для запуска первой сборки.
-
-### 10. Тестирование CI/CD
-
-1. Вносим изменения в проект
-2. Делаем commit и push в репозиторий
-3. Запускаем сборку в Jenkins еще раз
-4. Проверяем, что изменения применились
-
-## Показ метрик
-
-### 9.1. Prometheus метрики
+#### 4.1. Prometheus метрики
 
 Откройте браузер:
 ```
@@ -130,7 +76,7 @@ http_server_requests_seconds_count{application="rest-restaurant"}
 process_cpu_usage{application="analytics-service-restaurant"}
 ```
 
-### 9.2. Grafana дашборды
+#### 4.2. Grafana дашборды
 
 Откройте браузер:
 ```
@@ -161,7 +107,7 @@ http://localhost:3000
 5. Нажмите **Run query**
 6. Нажмите **Apply** для сохранения панели
 
-### 9.3. Actuator метрики (прямой доступ)
+#### 4.3. Actuator метрики (прямой доступ)
 
 Метрики доступны напрямую через Actuator endpoints:
 
