@@ -17,7 +17,7 @@ public class InternalOrderAnalyticsListener {
                             durable = "true"
                     ),
                     exchange = @Exchange(
-                            name = "order-analytics-fanout",
+                            name = "analytics-fanout",
                             type = "fanout"
                     )
             )
