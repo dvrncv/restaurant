@@ -4,6 +4,7 @@ import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsMutation;
 import com.netflix.graphql.dgs.DgsQuery;
 import com.netflix.graphql.dgs.InputArgument;
+import demo.dto.DishIngredientRequest;
 import demo.dto.DishRequest;
 import demo.dto.DishResponse;
 import demo.services.DishService;
@@ -32,15 +33,18 @@ public class DishDataFetcher {
 
     @DgsMutation
     public DishResponse createDish(@InputArgument("input") Map<String, Object> input) {
-        List<Long> ingredientIds = ((List<Object>) input.get("ingredients"))
+        List<DishIngredientRequest> dishIngredients = ((List<Map<String, Object>>) input.get("ingredients"))
                 .stream()
-                .map(o -> Long.parseLong(o.toString()))
+                .map(ingredientMap -> new DishIngredientRequest(
+                        Long.parseLong(ingredientMap.get("ingredientId").toString()),
+                        (Integer) ingredientMap.get("quantity")
+                ))
                 .toList();
 
         DishRequest request = new DishRequest(
                 (String) input.get("name"),
                 (Integer) input.get("durationTime"),
-                ingredientIds
+                dishIngredients
         );
         return dishService.createDish(request);
     }
@@ -50,15 +54,18 @@ public class DishDataFetcher {
             @InputArgument("id") Long id,
             @InputArgument("input") Map<String, Object> input
     ) {
-        List<Long> ingredientIds = ((List<Object>) input.get("ingredients"))
+        List<DishIngredientRequest> dishIngredients = ((List<Map<String, Object>>) input.get("ingredients"))
                 .stream()
-                .map(o -> Long.parseLong(o.toString()))
+                .map(ingredientMap -> new DishIngredientRequest(
+                        Long.parseLong(ingredientMap.get("ingredientId").toString()),
+                        (Integer) ingredientMap.get("quantity")
+                ))
                 .toList();
 
         DishRequest request = new DishRequest(
                 (String) input.get("name"),
                 (Integer) input.get("durationTime"),
-                ingredientIds
+                dishIngredients
         );
         return dishService.updateDish(id, request);
     }

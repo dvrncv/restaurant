@@ -45,10 +45,15 @@ input IngredientInput {
     unit: String!
 }
 
+input DishIngredientInput {
+    ingredientId: ID!
+    quantity: Int!
+}
+
 input DishInput {
     name: String!
     durationTime: Int!
-    ingredients: [ID!]!
+    ingredients: [DishIngredientInput!]!
 }
 
 input OrderItemInput {

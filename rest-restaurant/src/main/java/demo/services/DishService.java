@@ -1,6 +1,7 @@
 package demo.services;
 
 
+import demo.dto.DishIngredientRequest;
 import demo.dto.DishRequest;
 import demo.dto.DishResponse;
 import demo.dto.IngredientResponse;
@@ -36,7 +37,16 @@ public class DishService {
     public DishResponse createDish(DishRequest request) {
         validateDishName(request.name(), null);
         List<IngredientResponse> ingredients = request.ingredients().stream()
-                .map(ingredientService::findIngredientById)
+                .map(dishIngredient -> {
+                    IngredientResponse storedIngredient = ingredientService.findIngredientById(dishIngredient.ingredientId());
+                    return new IngredientResponse(
+                            storedIngredient.getId(),
+                            storedIngredient.getName(),
+                            dishIngredient.quantity(),
+                            storedIngredient.getExpirationDate(),
+                            storedIngredient.getUnit()
+                    );
+                })
                 .toList();
 
         long id = storage.dishSequence.incrementAndGet();
@@ -55,7 +65,16 @@ public class DishService {
         findDishById(id);
 
         List<IngredientResponse> ingredients = request.ingredients().stream()
-                .map(ingredientService::findIngredientById)
+                .map(dishIngredient -> {
+                    IngredientResponse storedIngredient = ingredientService.findIngredientById(dishIngredient.ingredientId());
+                    return new IngredientResponse(
+                            storedIngredient.getId(),
+                            storedIngredient.getName(),
+                            dishIngredient.quantity(),
+                            storedIngredient.getExpirationDate(),
+                            storedIngredient.getUnit()
+                    );
+                })
                 .toList();
 
         DishResponse updatedDish = new DishResponse(

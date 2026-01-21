@@ -54,7 +54,29 @@ public class InMemoryStorage {
         ingredients.put(ing3.getId(), ing3);
 
 
-        List<IngredientResponse> dishIngredients = List.of(ing1, ing2, ing3);
+        IngredientResponse dishIng1 = new IngredientResponse(
+                ing1.getId(),
+                ing1.getName(),
+                50, 
+                ing1.getExpirationDate(),
+                ing1.getUnit()
+        );
+        IngredientResponse dishIng2 = new IngredientResponse(
+                ing2.getId(),
+                ing2.getName(),
+                150, 
+                ing2.getExpirationDate(),
+                ing2.getUnit()
+        );
+        IngredientResponse dishIng3 = new IngredientResponse(
+                ing3.getId(),
+                ing3.getName(),
+                30,
+                ing3.getExpirationDate(),
+                ing3.getUnit()
+        );
+
+        List<IngredientResponse> dishIngredients = List.of(dishIng1, dishIng2, dishIng3);
         DishResponse dish1 = new DishResponse(
                 dishSequence.incrementAndGet(),
                 "Овощное рагу",

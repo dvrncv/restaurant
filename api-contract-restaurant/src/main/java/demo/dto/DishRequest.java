@@ -3,6 +3,7 @@ package demo.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -12,5 +13,6 @@ public record DishRequest(
         @Positive(message = "Время приготовления должно быть положительным")
         Integer durationTime,
         @NotEmpty(message = "Список ингредиентов не может быть пустым")
-        List<Long> ingredients
+        @Valid
+        List<DishIngredientRequest> ingredients
 ) {}
