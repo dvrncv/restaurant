@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import java.io.IOException;
 
-//@Component
+@Component
 @Order(2)
 public class PerfomanceWarningFilter implements Filter {
     private static final Logger log = LoggerFactory.getLogger(PerfomanceWarningFilter.class);

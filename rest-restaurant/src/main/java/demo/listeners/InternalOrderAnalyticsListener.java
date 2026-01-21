@@ -13,7 +13,7 @@ public class InternalOrderAnalyticsListener {
     @RabbitListener(
             bindings = @QueueBinding(
                     value = @Queue(
-                            name = "q.demorest.order.analytics",
+                            name = "q.demorest.analytics",
                             durable = "true"
                     ),
                     exchange = @Exchange(

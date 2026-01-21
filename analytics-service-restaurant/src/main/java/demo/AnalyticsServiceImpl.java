@@ -22,8 +22,8 @@ public class AnalyticsServiceImpl extends AnalyticsServiceGrpc.AnalyticsServiceI
         int dishCount = request.getItemsList().size();
         int cookingTimeMinutes = request.getCookingTimeMinutes();
 
-        int averageTimePerDish = dishCount > 0
-                ? cookingTimeMinutes / dishCount
+        int averageTimePerDish = totalItems > 0
+                ? cookingTimeMinutes / totalItems
                 : 0;
 
         int complexityScore = totalItems + cookingTimeMinutes;

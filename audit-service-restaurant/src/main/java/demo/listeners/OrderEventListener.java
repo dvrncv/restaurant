@@ -19,7 +19,7 @@ import com.rabbitmq.client.Channel;
 @Component
 public class OrderEventListener {
     private static final Logger log = LoggerFactory.getLogger(OrderEventListener.class);
-    private static final String EXCHANGE_NAME = "order-exchange";
+    private static final String EXCHANGE_NAME = "restaurant-exchange";
     private static final String ORDER_QUEUE = "q.audit.orders";
     private static final String INGREDIENT_QUEUE = "q.audit.ingredients";
     private static final String ANALYTICS_QUEUE = "q.audit.analytics";
@@ -191,3 +191,6 @@ public class OrderEventListener {
         }
     }
 }
+
+
+

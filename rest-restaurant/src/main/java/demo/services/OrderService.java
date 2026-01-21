@@ -151,10 +151,9 @@ public class OrderService {
     public OrderResponse updateOrderStatus(Long id, String newStatus) {
         OrderResponse existingOrder = findOrderById(id);
 
-        if ("COMPLETED".equalsIgnoreCase(existingOrder.getStatus())) {
-            throw new IllegalStateException("Нельзя изменить статус завершённого заказа");
+        if ("COMPLETED".equalsIgnoreCase(existingOrder.getStatus()) || "READY".equalsIgnoreCase(existingOrder.getStatus())) {
+            throw new IllegalStateException("Нельзя изменить статус готового или завершённого заказа");
         }
-
         OrderResponse updatedOrder = new OrderResponse(
                 id,
                 existingOrder.getDishes(),
@@ -197,3 +196,5 @@ public class OrderService {
         storage.orders.remove(id);
     }
 }
+
+
