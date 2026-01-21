@@ -7,7 +7,7 @@ scrape_configs:
     static_configs:
       - targets:
           [
-            "demo-rest:8090",
+            "demo-rest:8080",
             "notification-service:8083",
             "audit-service:8082",
             "analytics-service:8081",

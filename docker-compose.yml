@@ -86,10 +86,10 @@ services:
   demo-rest:
     build: ./rest-restaurant
     ports:
-      - "8090:8090"
+      - "8080:8080"
     environment:
       - SPRING_RABBITMQ_HOST=rabbitmq
-      - SERVER_PORT=8090
+      - SERVER_PORT=8080
       - GRPC_CLIENT_ANALYTICS_SERVICE_ADDRESS=static://analytics-service:9090
     depends_on:
       rabbitmq:
