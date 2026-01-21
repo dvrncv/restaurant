@@ -10,6 +10,8 @@ import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
+import java.util.stream.Collectors;
+
 @Component
 public class NotificationListener {
 
@@ -32,7 +34,7 @@ public class NotificationListener {
 
         String recommendations = event.recommendations().stream()
                 .map(r -> "\"" + r.replace("\"", "\\\"") + "\"")
-                .collect(java.util.stream.Collectors.joining(",", "[", "]"));
+                .collect(Collectors.joining(",", "[", "]"));
 
         String message = String.format(
                 "{\"type\":\"ORDER_ANALYZED\"," +

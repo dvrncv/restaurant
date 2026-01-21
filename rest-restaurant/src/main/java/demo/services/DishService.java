@@ -43,7 +43,6 @@ public class DishService {
                             storedIngredient.getId(),
                             storedIngredient.getName(),
                             dishIngredient.quantity(),
-                            storedIngredient.getExpirationDate(),
                             storedIngredient.getUnit()
                     );
                 })
@@ -53,7 +52,6 @@ public class DishService {
         DishResponse dish = new DishResponse(
                 id,
                 request.name(),
-                request.durationTime(),
                 ingredients
         );
         storage.dishes.put(id, dish);
@@ -71,7 +69,6 @@ public class DishService {
                             storedIngredient.getId(),
                             storedIngredient.getName(),
                             dishIngredient.quantity(),
-                            storedIngredient.getExpirationDate(),
                             storedIngredient.getUnit()
                     );
                 })
@@ -80,7 +77,6 @@ public class DishService {
         DishResponse updatedDish = new DishResponse(
                 id,
                 request.name(),
-                request.durationTime(),
                 ingredients
         );
         storage.dishes.put(id, updatedDish);

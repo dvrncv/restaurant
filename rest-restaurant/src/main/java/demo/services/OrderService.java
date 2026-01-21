@@ -76,12 +76,10 @@ public class OrderService {
                     DishResponse dish = dishService.findDishById(dishItem.dishId());
                     ingredientService.consumeIngredients(dish, dishItem.quantity());
 
-                    LocalDateTime now = LocalDateTime.now();
                     return new OrderItemResponse(
                             dish.getId(),
                             dish.getName(),
-                            dishItem.quantity(),
-                            now
+                            dishItem.quantity()
                     );
                 })
                 .toList();
@@ -129,12 +127,10 @@ public class OrderService {
                     DishResponse dish = dishService.findDishById(dishItem.dishId());
                     ingredientService.consumeIngredients(dish, dishItem.quantity());
 
-                    LocalDateTime now = LocalDateTime.now();
                     return new OrderItemResponse(
                             dish.getId(),
                             dish.getName(),
-                            dishItem.quantity(),
-                            now
+                            dishItem.quantity()
                     );
                 })
                 .toList();

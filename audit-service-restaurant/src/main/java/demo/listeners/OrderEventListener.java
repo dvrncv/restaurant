@@ -173,19 +173,6 @@ public class OrderEventListener {
                     )
             )
     )
-
-    @RabbitListener(
-            bindings = @QueueBinding(
-                    value = @Queue(
-                            name = ANALYTICS_QUEUE,
-                            durable = "true"
-                    ),
-                    exchange = @Exchange(
-                            name = "analytics-fanout",
-                            type = "fanout"
-                    )
-            )
-    )
     public void handleOrderStatistics(OrderAnalyzedEvent event) {
         log.info("Получено событие: АНАЛИТИКА ЗАКАЗА");
         log.info("Номер заказа: {}", event.orderId());

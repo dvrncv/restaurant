@@ -6,7 +6,6 @@ import demo.dto.OrderItemResponse;
 import demo.dto.OrderResponse;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -26,10 +25,10 @@ public class InMemoryStorage {
     @PostConstruct
     public void init(){
 
-        IngredientResponse ing1 = new IngredientResponse(ingredientSequence.incrementAndGet(),
+        IngredientResponse ing1 = new IngredientResponse(
+                ingredientSequence.incrementAndGet(),
                 "Морковь",
                 100,
-                LocalDate.now().plusDays(10),
                 "гр"
         );
 
@@ -37,7 +36,6 @@ public class InMemoryStorage {
                 ingredientSequence.incrementAndGet(),
                 "Картофель",
                 300,
-                LocalDate.now().plusDays(7),
                 "гр"
         );
 
@@ -45,7 +43,6 @@ public class InMemoryStorage {
                 ingredientSequence.incrementAndGet(),
                 "Лук",
                 100,
-                LocalDate.now().plusDays(5),
                 "г"
         );
 
@@ -57,22 +54,19 @@ public class InMemoryStorage {
         IngredientResponse dishIng1 = new IngredientResponse(
                 ing1.getId(),
                 ing1.getName(),
-                50, 
-                ing1.getExpirationDate(),
+                50,
                 ing1.getUnit()
         );
         IngredientResponse dishIng2 = new IngredientResponse(
                 ing2.getId(),
                 ing2.getName(),
-                150, 
-                ing2.getExpirationDate(),
+                150,
                 ing2.getUnit()
         );
         IngredientResponse dishIng3 = new IngredientResponse(
                 ing3.getId(),
                 ing3.getName(),
                 30,
-                ing3.getExpirationDate(),
                 ing3.getUnit()
         );
 
@@ -80,7 +74,6 @@ public class InMemoryStorage {
         DishResponse dish1 = new DishResponse(
                 dishSequence.incrementAndGet(),
                 "Овощное рагу",
-                25,
                 dishIngredients
         );
 
@@ -90,8 +83,7 @@ public class InMemoryStorage {
         OrderItemResponse orderItem1 = new OrderItemResponse(
                 dish1.getId(),
                 dish1.getName(),
-                2,
-                LocalDateTime.now()
+                2
         );
 
         OrderResponse order1 = new OrderResponse(

@@ -77,7 +77,6 @@ public class IngredientService {
                 ingredient.getId(),
                 ingredient.getName(),
                 newQuantity,
-                ingredient.getExpirationDate(),
                 ingredient.getUnit()
         );
         
@@ -108,7 +107,6 @@ public class IngredientService {
                 id,
                 request.name(),
                 request.quantity(),
-                request.expirationDate(),
                 request.unit()
         );
         storage.ingredients.put(id, ingredient);
@@ -123,7 +121,6 @@ public class IngredientService {
                 id,
                 request.name(),
                 request.quantity(),
-                request.expirationDate(),
                 request.unit()
         );
         storage.ingredients.put(id, updatedIngredient);

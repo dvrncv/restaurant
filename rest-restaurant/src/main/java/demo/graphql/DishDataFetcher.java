@@ -43,7 +43,6 @@ public class DishDataFetcher {
 
         DishRequest request = new DishRequest(
                 (String) input.get("name"),
-                (Integer) input.get("durationTime"),
                 dishIngredients
         );
         return dishService.createDish(request);
@@ -64,7 +63,6 @@ public class DishDataFetcher {
 
         DishRequest request = new DishRequest(
                 (String) input.get("name"),
-                (Integer) input.get("durationTime"),
                 dishIngredients
         );
         return dishService.updateDish(id, request);

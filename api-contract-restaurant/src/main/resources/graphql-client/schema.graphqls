@@ -2,14 +2,12 @@ type Ingredient {
     id: ID!
     name: String
     quantity: Int
-    expirationDate: String
     unit: String
 }
 
 type Dish {
     id: ID!
     name: String
-    durationTime: Int
     ingredients: [Ingredient]
 }
 
@@ -17,8 +15,6 @@ type OrderItem {
     dishId: ID!
     name: String
     quantity: Int
-    startedAt: String
-    finishedAt: String
 }
 
 type Order {
@@ -41,7 +37,6 @@ type PagedOrders {
 input IngredientInput {
     name: String!
     quantity: Int!
-    expirationDate: String!
     unit: String!
 }
 
@@ -52,7 +47,6 @@ input DishIngredientInput {
 
 input DishInput {
     name: String!
-    durationTime: Int!
     ingredients: [DishIngredientInput!]!
 }
 

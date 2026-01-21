@@ -35,7 +35,6 @@ public class IngredientDataFetcher {
         IngredientRequest request = new IngredientRequest(
                 (String) input.get("name"),
                 (Integer) input.get("quantity"),
-                java.time.LocalDate.parse((String) input.get("expirationDate")),
                 (String) input.get("unit")
         );
         return ingredientService.createIngredient(request);
@@ -49,7 +48,6 @@ public class IngredientDataFetcher {
         IngredientRequest request = new IngredientRequest(
                 (String) input.get("name"),
                 (Integer) input.get("quantity"),
-                java.time.LocalDate.parse((String) input.get("expirationDate")),
                 (String) input.get("unit")
         );
         return ingredientService.updateIngredient(id, request);

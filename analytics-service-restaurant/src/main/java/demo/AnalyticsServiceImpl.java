@@ -3,6 +3,7 @@ package demo;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @GrpcService
@@ -56,58 +57,38 @@ public class AnalyticsServiceImpl extends AnalyticsServiceGrpc.AnalyticsServiceI
             int averageTimePerDish,
             int dishCount
     ) {
-        List<String> recommendations = new java.util.ArrayList<>();
+        List<String> recommendations = new ArrayList<>();
 
         if (cookingTimeMinutes > 60) {
-            recommendations.add(
-                    "Общее время приготовления превышает 60 минут. Рекомендуется оптимизировать процесс приготовления."
-            );
+            recommendations.add("Заказ готовился слишком долго. Стоит ускорить процесс.");
         } else if (cookingTimeMinutes > 45) {
-            recommendations.add(
-                    "Рекомендуется заранее подготавливать ингредиенты для сокращения времени приготовления."
-            );
+            recommendations.add("Можно ускорить готовку, если заранее подготовить ингредиенты.");
         } else if (cookingTimeMinutes <= 20) {
-            recommendations.add(
-                    "Отличная скорость приготовления заказа."
-            );
+            recommendations.add("Заказ приготовлен быстро.");
         }
 
         if (totalItems > 15) {
-            recommendations.add(
-                    "Большой объем заказа. Убедитесь, что на кухне достаточно персонала."
-            );
+            recommendations.add("Большой заказ. Проверьте, хватает ли сотрудников на кухне.");
         } else if (totalItems > 10) {
-            recommendations.add(
-                    "Средний объем заказа. Стандартной загрузки кухни должно быть достаточно."
-            );
+            recommendations.add("Заказ среднего размера. Обычной загрузки кухни достаточно.");
         }
 
         if (averageTimePerDish > 20) {
-            recommendations.add(
-                    "Обнаружены сложные блюда. Рассмотрите возможность добавления более простых позиций в меню."
-            );
+            recommendations.add("Некоторые блюда готовятся долго. Возможно, они слишком сложные.");
         } else if (averageTimePerDish <= 10) {
-            recommendations.add(
-                    "Блюда готовятся быстро. Подходит для высокой оборачиваемости заказов."
-            );
+            recommendations.add("Блюда готовятся быстро, кухня хорошо справляется.");
         }
 
         if (dishCount > 10) {
-            recommendations.add(
-                    "Заказ содержит большое разнообразие блюд. Проверьте наличие ингредиентов на складе."
-            );
+            recommendations.add("В заказе много разных блюд. Проверьте запасы ингредиентов.");
         }
 
         if (totalItems > 15 && cookingTimeMinutes > 40) {
-            recommendations.add(
-                    "Рекомендуется использовать параллельное приготовление для ускорения выполнения заказа."
-            );
+            recommendations.add("Заказ большой и долгий. Лучше готовить блюда параллельно.");
         }
 
         if (recommendations.isEmpty()) {
-            recommendations.add(
-                    "Параметры заказа находятся в оптимальных пределах."
-            );
+            recommendations.add("С заказом всё в порядке.");
         }
 
         return recommendations;
